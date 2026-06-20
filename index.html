@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -284,7 +285,6 @@
     <div class="metric"><div class="lbl">Remaining chats</div><div class="val" id="mRem">—</div></div>
     <div class="metric"><div class="lbl">Final weighted AHT</div><div class="val" id="mFinal">—</div></div>
     <div class="metric"><div class="lbl">AHT goal</div><div class="val" id="mGoal">6.26</div></div>
-    <div class="metric"><div class="lbl">Goal status</div><div class="val" id="mStatus">—</div></div>
   </div>
 
   <div class="card">
@@ -341,11 +341,10 @@
     {name:'Sun', chats:70, aht:5.45},
     {name:'Mon', chats:70, aht:5.45},
     {name:'Tue', chats:40, aht:5.45},
-    {name:'Thu', chats:70, aht:5.45},
     {name:'Fri', chats:40, aht:5.45},
     {name:'Sat', chats:70, aht:5.45},
     {name:'Sun', chats:70, aht:5.45},
-    {name:'Tue', chats:70, aht:5.45},
+    {name:'Tue', chats:40, aht:5.45},
   ];
 
   function getBase() {
@@ -377,11 +376,10 @@
       {name:'Sun', chats:70, aht:5.45},
       {name:'Mon', chats:70, aht:5.45},
       {name:'Tue', chats:40, aht:5.45},
-      {name:'Thu', chats:70, aht:5.45},
       {name:'Fri', chats:40, aht:5.45},
       {name:'Sat', chats:70, aht:5.45},
       {name:'Sun', chats:70, aht:5.45},
-      {name:'Tue', chats:70, aht:5.45},
+      {name:'Tue', chats:40, aht:5.45},
     ];
     render();
   }
@@ -437,9 +435,6 @@
     document.getElementById('mRem').textContent    = totalRem;
     document.getElementById('mFinal').textContent  = finalW.toFixed(2);
     document.getElementById('mGoal').textContent   = base.goal.toFixed(2);
-
-    const statusEl = document.getElementById('mStatus');
-    statusEl.innerHTML = `<span class="badge ${hit ? 'badge-hit' : 'badge-miss'}">${hit ? '✓ On track' : '✗ Off track'}</span>`;
   }
 
   render();
