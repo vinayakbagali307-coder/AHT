@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AHT Goal Calculator</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f0;
+      color: #1a1a1a;
+      min-height: 100vh;
+      padding: 24px 16px;
+    }
+
+    .container { max-width: 860px; margin: 0 auto; }
+
+    h1 {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid #e5e5e0;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #444;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 14px;
+    }
+
+    .input-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+    }
+
+    .field { display: flex; flex-direction: column; gap: 5px; }
+
+    .field label {
+      font-size: 12px;
+      color: #666;
+      font-weight: 500;
+    }
+
+    .field input, .field select {
+      padding: 8px 10px;
+      font-size: 14px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: #fff;
+      color: #1a1a1a;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .field input:focus, .field select:focus {
+      border-color: #185FA5;
+      box-shadow: 0 0 0 3px rgba(24,95,165,0.1);
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .metric {
+      background: #f8f8f5;
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+
+    .metric .lbl {
+      font-size: 11px;
+      color: #888;
+      font-weight: 500;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .metric .val {
+      font-size: 22px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    .add-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      margin-bottom: 16px;
+    }
+
+    .add-row select, .add-row input {
+      padding: 8px 10px;
+      font-size: 13px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: #fff;
+      color: #1a1a1a;
+      outline: none;
+    }
+
+    .add-row select { width: 90px; }
+    .add-row input { width: 130px; }
+
+    .btn {
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: #fff;
+      color: #1a1a1a;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+      white-space: nowrap;
+    }
+
+    .btn:hover { background: #f5f5f0; border-color: #bbb; }
+    .btn:active { transform: scale(0.98); }
+
+    .btn-primary {
+      background: #185FA5;
+      color: #fff;
+      border-color: #185FA5;
+    }
+
+    .btn-primary:hover { background: #0C447C; border-color: #0C447C; }
+
+    .btn-danger {
+      background: none;
+      border: none;
+      color: #A32D2D;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      line-height: 1;
+    }
+
+    .btn-danger:hover { background: #FCEBEB; }
+
+    .table-wrap { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      min-width: 560px;
+    }
+
+    thead th {
+      background: #f8f8f5;
+      color: #666;
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 10px 10px;
+      border: 1px solid #e5e5e0;
+      text-align: center;
+    }
+
+    thead th.left { text-align: left; }
+
+    tbody td {
+      padding: 9px 10px;
+      border: 1px solid #e5e5e0;
+      text-align: center;
+      color: #1a1a1a;
+    }
+
+    tbody td.day-name {
+      text-align: left;
+      font-weight: 600;
+    }
+
+    tbody tr:nth-child(even) td { background: #fafaf8; }
+
+    tbody td input[type="number"] {
+      width: 100%;
+      padding: 5px 7px;
+      font-size: 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: #fff;
+      color: #1a1a1a;
+      text-align: center;
+      outline: none;
+    }
+
+    tbody td input[type="number"]:focus {
+      border-color: #185FA5;
+      box-shadow: 0 0 0 2px rgba(24,95,165,0.1);
+    }
+
+    tfoot td {
+      padding: 10px 10px;
+      border: 1px solid #e5e5e0;
+      font-weight: 700;
+      text-align: center;
+      background: #f0f0ea;
+      border-top: 2px solid #bbb;
+    }
+
+    tfoot td.left { text-align: left; }
+
+    .hit { color: #3B6D11; font-weight: 700; }
+    .miss { color: #A32D2D; font-weight: 700; }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .badge-hit { background: #EAF3DE; color: #3B6D11; }
+    .badge-miss { background: #FCEBEB; color: #A32D2D; }
+
+    .tip {
+      font-size: 12px;
+      color: #888;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 500px) {
+      h1 { font-size: 17px; }
+      .metric .val { font-size: 18px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <h1>AHT Goal Calculator</h1>
+  <p class="subtitle">Amazon Customer Service — Chat Process</p>
+
+  <div class="card">
+    <div class="section-title">Base numbers</div>
+    <div class="input-grid">
+      <div class="field">
+        <label>Chats handled so far</label>
+        <input type="number" id="initChats" value="557" min="0" oninput="render()">
+      </div>
+      <div class="field">
+        <label>Current weighted AHT</label>
+        <input type="number" id="initAHT" value="6.73" step="0.01" min="0" oninput="render()">
+      </div>
+      <div class="field">
+        <label>AHT goal</label>
+        <input type="number" id="goalInput" value="6.26" step="0.01" min="0" oninput="render()">
+      </div>
+    </div>
+  </div>
+
+  <div class="metric-grid">
+    <div class="metric"><div class="lbl">Total chats (end)</div><div class="val" id="mTotal">—</div></div>
+    <div class="metric"><div class="lbl">Remaining chats</div><div class="val" id="mRem">—</div></div>
+    <div class="metric"><div class="lbl">Final weighted AHT</div><div class="val" id="mFinal">—</div></div>
+    <div class="metric"><div class="lbl">AHT goal</div><div class="val" id="mGoal">6.26</div></div>
+    <div class="metric"><div class="lbl">Goal status</div><div class="val" id="mStatus">—</div></div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">Add a day</div>
+    <div class="add-row">
+      <div class="field">
+        <label>Day</label>
+        <select id="newDayName">
+          <option>Sat</option><option>Sun</option><option>Mon</option>
+          <option>Tue</option><option>Wed</option><option>Thu</option><option>Fri</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Chats</label>
+        <input type="number" id="newDayChats" placeholder="e.g. 70" min="1">
+      </div>
+      <div class="field">
+        <label>AHT target</label>
+        <input type="number" id="newDayAHT" placeholder="e.g. 5.45" step="0.01" min="0" value="5.45">
+      </div>
+      <div class="field" style="justify-content:flex-end;">
+        <button class="btn btn-primary" onclick="addDay()">+ Add day</button>
+      </div>
+      <div class="field" style="justify-content:flex-end;">
+        <button class="btn" onclick="resetDays()">↺ Reset</button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="left" style="width:65px;">Day</th>
+            <th style="width:75px;">Chats</th>
+            <th style="width:90px;">AHT input</th>
+            <th style="width:90px;">Cum. chats</th>
+            <th style="width:100px;">Weighted AHT</th>
+            <th style="width:70px;">Goal</th>
+            <th style="width:45px;"></th>
+          </tr>
+        </thead>
+        <tbody id="dayBody"></tbody>
+        <tfoot id="dayFoot"></tfoot>
+      </table>
+    </div>
+    <p class="tip">Edit AHT and chats inline — table updates instantly.</p>
+  </div>
+
+</div>
+
+<script>
+  let days = [
+    {name:'Sat', chats:70, aht:5.45},
+    {name:'Sun', chats:70, aht:5.45},
+    {name:'Mon', chats:70, aht:5.45},
+    {name:'Tue', chats:40, aht:5.45},
+    {name:'Thu', chats:70, aht:5.45},
+    {name:'Fri', chats:40, aht:5.45},
+    {name:'Sat', chats:70, aht:5.45},
+    {name:'Sun', chats:70, aht:5.45},
+    {name:'Tue', chats:70, aht:5.45},
+  ];
+
+  function getBase() {
+    return {
+      chats: parseFloat(document.getElementById('initChats').value) || 0,
+      aht:   parseFloat(document.getElementById('initAHT').value)   || 0,
+      goal:  parseFloat(document.getElementById('goalInput').value)  || 6.26,
+    };
+  }
+
+  function addDay() {
+    const name  = document.getElementById('newDayName').value;
+    const chats = parseFloat(document.getElementById('newDayChats').value);
+    const aht   = parseFloat(document.getElementById('newDayAHT').value) || 5.45;
+    if (!chats || chats <= 0) { alert('Please enter a valid chat count.'); return; }
+    days.push({name, chats, aht});
+    document.getElementById('newDayChats').value = '';
+    render();
+  }
+
+  function removeDay(i) {
+    days.splice(i, 1);
+    render();
+  }
+
+  function resetDays() {
+    days = [
+      {name:'Sat', chats:70, aht:5.45},
+      {name:'Sun', chats:70, aht:5.45},
+      {name:'Mon', chats:70, aht:5.45},
+      {name:'Tue', chats:40, aht:5.45},
+      {name:'Thu', chats:70, aht:5.45},
+      {name:'Fri', chats:40, aht:5.45},
+      {name:'Sat', chats:70, aht:5.45},
+      {name:'Sun', chats:70, aht:5.45},
+      {name:'Tue', chats:70, aht:5.45},
+    ];
+    render();
+  }
+
+  function render() {
+    const base  = getBase();
+    const tbody = document.getElementById('dayBody');
+    const tfoot = document.getElementById('dayFoot');
+    tbody.innerHTML = '';
+
+    let cumChats = base.chats;
+    let cumTime  = base.chats * base.aht;
+
+    days.forEach((d, i) => {
+      const ahtVal = parseFloat(d.aht) || 0;
+      cumChats += d.chats;
+      cumTime  += d.chats * ahtVal;
+      const wAHT = cumChats > 0 ? cumTime / cumChats : 0;
+      const hit  = wAHT <= base.goal;
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="day-name">${d.name}</td>
+        <td><input type="number" min="1" value="${d.chats}" style="width:60px;"
+            oninput="days[${i}].chats=parseFloat(this.value)||0; render();"></td>
+        <td><input type="number" step="0.01" min="0" value="${ahtVal.toFixed(2)}"
+            oninput="days[${i}].aht=parseFloat(this.value)||0; render();"></td>
+        <td>${cumChats}</td>
+        <td class="${hit ? 'hit' : 'miss'}">${wAHT.toFixed(2)}</td>
+        <td>${base.goal.toFixed(2)}</td>
+        <td><button class="btn-danger" onclick="removeDay(${i})" title="Remove">✕</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    const totalRem   = days.reduce((a, d) => a + (parseFloat(d.chats)||0), 0);
+    const totalChats = base.chats + totalRem;
+    const totalTime  = base.chats * base.aht + days.reduce((a, d) => a + (parseFloat(d.chats)||0) * (parseFloat(d.aht)||0), 0);
+    const finalW     = totalChats > 0 ? totalTime / totalChats : 0;
+    const hit        = finalW <= base.goal;
+
+    tfoot.innerHTML = `<tr>
+      <td class="left">Total</td>
+      <td>${totalRem}</td>
+      <td>—</td>
+      <td>${totalChats}</td>
+      <td class="${hit ? 'hit' : 'miss'}">${finalW.toFixed(2)}</td>
+      <td>${base.goal.toFixed(2)}</td>
+      <td></td>
+    </tr>`;
+
+    document.getElementById('mTotal').textContent  = totalChats;
+    document.getElementById('mRem').textContent    = totalRem;
+    document.getElementById('mFinal').textContent  = finalW.toFixed(2);
+    document.getElementById('mGoal').textContent   = base.goal.toFixed(2);
+
+    const statusEl = document.getElementById('mStatus');
+    statusEl.innerHTML = `<span class="badge ${hit ? 'badge-hit' : 'badge-miss'}">${hit ? '✓ On track' : '✗ Off track'}</span>`;
+  }
+
+  render();
+</script>
+</body>
+</html>
